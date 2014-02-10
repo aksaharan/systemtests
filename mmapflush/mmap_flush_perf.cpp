@@ -2,19 +2,25 @@
 #include <vector>
 #include <ctime>
 
+#include "logger.h"
 #include "mmap_file.h"
 #include "mmap_file_mgr.h"
 
 using namespace std;
 
 void printHelp(char* progName) {
-	cout << "Usage: " << progName << " <Type> <FileCreateOptions> <ZeroFill> <FlushThreadCount> <TouchOffsets> <TouchValue> <File1> [...<FileN>]" << endl
+	cout << "Usage: " << progName << " <Type> <FileCreateOptions> <ZeroFill> <FlushThreadCount> <TouchOffsets> <TouchValue> <ParallelFileFlush> <File1> [...<FileN>]" << endl
 		<< "  FileCreateOptions    Integer value that can be passed for CreateFile" << endl
 		<< endl;
 }
 
+template<typename ValueType>
+ValueType extractCmdLine(const string& cmdLineArg, const string& key, ValueType defaultValue) {
+	return defaultValue;
+}
+
 int runMMapTest(int argc, char* argv[]) {
-	logger() << "runMMapTest alled" << endl;
+	logger() << "runMMapTest called" << endl;
 	if (argc <= 7) {
 		printHelp(argv[0]);
 		return 0;
@@ -35,8 +41,10 @@ int runMMapTest(int argc, char* argv[]) {
 	long touchValue = atol(argv[6]);
 	touchValue = touchValue ? touchValue : rand();
 
+	bool parallelFileFlush = atol(argv[7]) ? true : false;
+
 	vector<string> files;
-	for (int i = 7; i < argc; ++i) {
+	for (int i = 8; i < argc; ++i) {
 		files.push_back(string(argv[i]));
 	}
 
@@ -53,10 +61,17 @@ int runMMapTest(int argc, char* argv[]) {
 	mgr.setFileCreateOptions(createOptions);
 	mgr.setFlushThreads(flushThreadCount);
 	mgr.setZeroFill(zeroFill);
-	mgr.setParallelFlush(true);
+	mgr.setParallelFlush(parallelFileFlush);
 	mgr.setUpdateOffset(touchOffset);
 	mgr.setUpdateValue(touchValue);
 	mgr.setFileSize(512LL * 1024 * 1024);
+
+	if (!mgr.getNextMemoryMappedFileLocation(0) || !mgr.fetchMinOSPageSizeBytes()) {
+		logger() << "Not supported platform/configuration, make sure you are running on 64-bit platform {mmap-offset: "
+			<< mgr.getNextMemoryMappedFileLocation(0) << ", minOSPageSize: " << mgr.fetchMinOSPageSizeBytes()
+			<< "}" << endl;
+		return 1;
+	}
 
 	mgr.runTests(files);
 	return 0;
@@ -64,6 +79,7 @@ int runMMapTest(int argc, char* argv[]) {
 
 int main(int argc, char* argv[]) {
 	srand(static_cast<unsigned int>(time(NULL)));
+	logger() << "This is logger test for the output" << (void*)163838 << endl;
 	if (argc <= 2) {
 		printHelp(argv[0]);
 		return 0;

@@ -1,5 +1,6 @@
 #include <time.h>
 
+#include "logger.h"
 #include "mmap_file.h"
 #include "mmap_file_mgr.h"
 
@@ -151,6 +152,10 @@ bool MMapFileManager::_closeAll() {
 }
 
 bool MMapFileManager::_flushAll() {
+	if (_mappedFiles.size() <= 0) {
+		return true;
+	}
+
 	bool status = true;
 
 	DWORD* threadIds = NULL;
@@ -159,6 +164,9 @@ bool MMapFileManager::_flushAll() {
 		threadIds = new DWORD[_mappedFiles.size()];
 		threadHandles = new HANDLE[_mappedFiles.size()];
 	}
+
+	logger() << "=== Starting to flush all files now {files: " << _mappedFiles.size() << "}" << endl;
+	ULONGLONG startTime = GetTickCount64();
 
 	unsigned i = 0;
 	for (std::map<string, MMapFile*>::iterator pIt = _mappedFiles.begin();
@@ -185,6 +193,10 @@ bool MMapFileManager::_flushAll() {
 		delete[] threadIds;
 		delete[] threadHandles;
 	}
+
+	ULONGLONG flushTime = GetTickCount64();
+	logger() << "=== Completed flushing all files {files: " << _mappedFiles.size() 
+		<< ", flush-time(millis): " << (flushTime - startTime) << "}" << endl;
 
 	return status;
 }

@@ -10,10 +10,6 @@
 
 using namespace std;
 
-class logstream : public ostringstream {
-};
-
-ostream& logger(ostringstream& os = ostringstream());
 
 class MMapFile {
 public:
