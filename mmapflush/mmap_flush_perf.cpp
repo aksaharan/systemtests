@@ -10,7 +10,13 @@ using namespace std;
 
 void printHelp(char* progName) {
 	cout << "Usage: " << progName << " <Type> <FileCreateOptions> <ZeroFill> <FlushThreadCount> <TouchOffsets> <TouchValue> <ParallelFileFlush> <File1> [...<FileN>]" << endl
-		<< "  FileCreateOptions    Integer value that can be passed for CreateFile" << endl
+		<< "Type                  Types for test [mmap]" << endl
+		<< "FileCreateOptions     Values passed for CreateFile - set 0 for default" << endl
+		<< "ZeroFill              Fill new files wih zero - set 0 for default" << endl
+		<< "FlushThreadCount      Number of threads to use flushing regions of mapped file" << endl
+		<< "TouchOffsets          Periodic offsets that should be dirtied for the test" << endl
+		<< "TouchValue            Value to set at dirty bytes - set 0 for one random value to be picked" << endl
+		<< "ParallelFileFlush     Set 1 to enable flushing of multiple files in parallel else set - 0" << endl
 		<< endl;
 }
 
@@ -39,8 +45,6 @@ int runMMapTest(int argc, char* argv[]) {
 	touchOffset = (touchOffset <= 0 || touchOffset >= (20 * 1024 * 1024)) ? 1024 : touchOffset;
 
 	long touchValue = atol(argv[6]);
-	touchValue = touchValue ? touchValue : rand();
-
 	bool parallelFileFlush = atol(argv[7]) ? true : false;
 
 	vector<string> files;

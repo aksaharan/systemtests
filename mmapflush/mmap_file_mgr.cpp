@@ -69,8 +69,11 @@ bool MMapFileManager::runTests(const vector<string>& files) {
 
 	unsigned repeatCount = 1;
 	for (unsigned i = 0; i < repeatCount; ++i) {
+		// If 0, randomize the update value each time in the loop
+		long updateValue = _updateValue ? _updateValue : rand();
+		logger() << "Starting to dirty mapped memory regions {loop for dirtying mapped memory region" << endl;
+
 		for (vector<string>::iterator pIt = mappedFiles.begin(); pIt != mappedFiles.end(); ++pIt) {
-			logger() << "Starting loop for dirtying mapped memory region" << endl;
 			MMapFile* mapFile = mappedFile(*pIt);
 			if (!mapFile) {
 				logger() << "Failed to get the mapped file for specified file {file: " << *pIt << "}" << endl;
@@ -80,7 +83,7 @@ bool MMapFileManager::runTests(const vector<string>& files) {
 			// Serialized touching of pages 
 			char* mappedView = reinterpret_cast<char*>(mapFile->view());
 			for (unsigned long long i = 0; i < (mapFile->length() - sizeof(_updateValue)); i += _updateOffset) {
-				*((long*)&mappedView[i]) = _updateValue;
+				*((long*)&mappedView[i]) = updateValue;
 			}
 
 			/*

@@ -137,10 +137,12 @@
     <None Include="README.MD" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="logger.h" />
     <ClInclude Include="mmap_file.h" />
     <ClInclude Include="mmap_file_mgr.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="logger.cpp" />
     <ClCompile Include="mmap_file.cpp" />
     <ClCompile Include="mmap_flush_perf.cpp" />
     <ClCompile Include="mmap_file_mgr.cpp" />
