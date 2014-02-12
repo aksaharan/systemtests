@@ -142,7 +142,7 @@
     <ClInclude Include="mmap_file_mgr.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="logger.cpp" />
+    <ClCompile Include="logger_win.cpp" />
     <ClCompile Include="mmap_file.cpp" />
     <ClCompile Include="mmap_flush_perf.cpp" />
     <ClCompile Include="mmap_file_mgr.cpp" />

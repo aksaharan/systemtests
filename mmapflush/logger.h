@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Windows.h>
-#include <WinBase.h>
-
 #include <iostream>
 #include <sstream>
 #include <ctime>
@@ -11,15 +8,15 @@ using namespace std;
 
 class logstream {
 public:
-	logstream()
+	inline logstream()
 		: _os(NULL), _dirty(false) {
 	}
 
-	logstream(const logstream& ls)
+	inline logstream(const logstream& ls)
 		: _os(NULL), _dirty(false) {
 	}
 
-	virtual ~logstream() {
+	virtual inline ~logstream() {
 		if (_dirty) {
 			cout << _os->str();
 		}
@@ -49,22 +46,7 @@ private:
 	bool _dirty;
 	ostringstream* _os;
 
-	inline ostringstream& _logger() {
-		if (_os) {
-			return *_os;
-		}
-
-		_os = new ostringstream();
-		_dirty = false;
-
-		time_t now = time(0);
-		struct tm ts;
-		char timeBuffer[100] = "";
-		localtime_s(&ts, &now);
-		strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d.%X", &ts);
-		*_os << "[" << timeBuffer << " {thread-" << GetCurrentThreadId() << "}] ";
-		return *_os;
-	}
+	ostringstream& _logger();
 };
 
 logstream logger();
