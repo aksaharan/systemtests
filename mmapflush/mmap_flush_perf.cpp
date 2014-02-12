@@ -2,6 +2,7 @@
 #include <vector>
 #include <ctime>
 
+#include "program_options.h"
 #include "logger.h"
 #include "mmap_file.h"
 #include "mmap_file_mgr.h"
@@ -27,6 +28,18 @@ ValueType extractCmdLine(const string& cmdLineArg, const string& key, ValueType 
 
 int runMMapTest(int argc, char* argv[]) {
 	logger() << "runMMapTest called" << endl;
+	ProgramOptions programOptions(argc, (char**)argv);
+	programOptions.append("type", false, "mmap")
+		.append("foption", true, (long)(FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN))
+		.append("zfill", true, true)
+		.append("fthreads", true, (unsigned long)0)
+		.append("pfflush", true, false)
+		.append("uoffset", true, (unsigned long)(16 * 1024 - 1))
+		.append("uvalue", true, (long)0)
+		.append("fsize", true, (unsigned long long)(512LL * 1024 * 1024))
+		;
+	programOptions.parse(false);
+
 	if (argc <= 7) {
 		printHelp(argv[0]);
 		return 0;
@@ -83,18 +96,22 @@ int runMMapTest(int argc, char* argv[]) {
 
 int main(int argc, char* argv[]) {
 	srand(static_cast<unsigned int>(time(NULL)));
-	logger() << "This is logger test for the output" << (void*)163838 << endl;
+	
+	/*
 	if (argc <= 2) {
 		printHelp(argv[0]);
 		return 0;
 	}
 
 	if (!_stricmp(argv[1], "mmap")) {
+	*/
 		return runMMapTest(argc, argv);
+		/*
 	} else {
 		logger() << "Unknown type info {" << argv[1] << "}" << endl;
 		printHelp(argv[0]);
 	}
+	*/
 
 	return 0;
 }
