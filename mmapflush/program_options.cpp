@@ -82,5 +82,25 @@ bool ProgramOptions::parse(bool exitOnFail) {
 }
 
 void ProgramOptions::_printHelp(const string& error) {
-	cout << "Print Help" << endl;
+	if (_argc < 1 || !_argv) {
+		cerr << "FATAL Error: Missing command line arguments [argc: " << _argc << "]" << endl;
+		return;
+	}
+
+	stringstream usageLine;
+	stringstream usageDetails;
+	usageLine << "Usage: " << _argv[0] << " ";
+	for (map<string, OptionDefinition>::const_iterator it = _definition.begin();
+		it != _definition.end();
+		++it) {
+			usageLine << _optionPrefix << it->first;
+			if (it->second._type == ODVT_BOOLEAN) {
+				usageLine << "[" << _optionSuffix << "value] ";
+			} else {
+				usageLine << _optionSuffix << "value ";
+			}
+	}
+
+	cout << usageLine.str() << endl;
+	cout << usageDetails.str() << endl;
 }

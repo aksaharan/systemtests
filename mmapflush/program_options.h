@@ -42,6 +42,13 @@ public:
 	ProgramOptions& append(const string& key, bool optional = true, double defaultValue = 0.0);
 	ProgramOptions& append(const string& key, bool optional = true, const string& defaultValue = "");
 
+	bool lValue(const string& key, long& value) const;
+	bool ulValue(const string& key, unsigned long& value) const;
+	bool ullValue(const string& key, unsigned long long& value) const;
+	bool boolValue(const string& key, bool& value) const;
+	bool doubleValue(const string& key, double& value) const;
+	bool stringValue(const string& key, string& value) const;
+
 	const vector<string> residualArgs() {
 		return _residualArgs;
 	}
