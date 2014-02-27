@@ -1,4 +1,5 @@
-#include <Windows.h>
+#include <ctime>
+#include <pthread.h>
 
 #include "logger.h"
 
@@ -17,8 +18,8 @@ ostringstream& logstream::_logger() {
 	time_t now = time(0);
 	struct tm ts;
 	char timeBuffer[100] = "";
-	localtime_s(&ts, &now);
+	localtime_r(&now, &ts);
 	strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d.%X", &ts);
-	*_os << "[" << timeBuffer << " {thread-" << GetCurrentThreadId() << "}] ";
+	*_os << "[" << timeBuffer << " {thread-" << pthread_self() << "}] ";
 	return *_os;
 }
