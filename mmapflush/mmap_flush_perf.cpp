@@ -9,7 +9,7 @@
 using namespace std;
 
 void printHelp(char* progName) {
-	cout << "Usage: " << progName << " <Type> <FileCreateOptions> <ZeroFill> <FlushThreadCount> <TouchOffsets> <TouchValue> <ParallelFileFlush> <File1> [...<FileN>]" << endl
+	cout << "Usage: " << progName << " <Type> <FileCreateOptions> <ZeroFill> <FlushThreadCount> <TouchOffsets> <TouchValue> <ParallelFileFlush> <ProgressiveBlockFlush> <FlushBlockSize> <File1> [...<FileN>]" << endl
 		<< "Type                  Types for test [mmap]" << endl
 		<< "FileCreateOptions     Values passed for CreateFile - set 0 for default" << endl
 		<< "ZeroFill              Fill new files wih zero - set 0 for default" << endl
@@ -17,6 +17,8 @@ void printHelp(char* progName) {
 		<< "TouchOffsets          Periodic offsets that should be dirtied for the test" << endl
 		<< "TouchValue            Value to set at dirty bytes - set 0 for one random value to be picked" << endl
 		<< "ParallelFileFlush     Set 1 to enable flushing of multiple files in parallel else set - 0" << endl
+		<< "ProgressiveBlockFlush Set 1 to enable flushing of progressive block by when doing threaded flush, else will flush in blocks" << endl
+		<< "FlushBlockSize        Block Size for flush in threaded flush - set 0 for default" << endl
 		<< endl;
 }
 
@@ -27,7 +29,7 @@ ValueType extractCmdLine(const string& cmdLineArg, const string& key, ValueType 
 
 int runMMapTest(int argc, char* argv[]) {
 	logger() << "runMMapTest called" << endl;
-	if (argc <= 7) {
+	if (argc <= 9) {
 		printHelp(argv[0]);
 		return 0;
 	}
@@ -47,8 +49,11 @@ int runMMapTest(int argc, char* argv[]) {
 	long touchValue = atol(argv[6]);
 	bool parallelFileFlush = atol(argv[7]) ? true : false;
 
+	bool progressiveBlockFlush = atol(argv[8]) ? true : false;
+	long flushBlockSize = atol(argv[9]);
+
 	vector<string> files;
-	for (int i = 8; i < argc; ++i) {
+	for (int i = 10; i < argc; ++i) {
 		files.push_back(string(argv[i]));
 	}
 
@@ -58,6 +63,8 @@ int runMMapTest(int argc, char* argv[]) {
 		<< "  flushThreadCount: " << flushThreadCount << endl
 		<< "  touchOffset: " << touchOffset << endl
 		<< "  touchValue: " << touchValue << endl
+		<< "  progressiveBlockFlush: " << progressiveBlockFlush << endl
+		<< "  flushBlockSize: " << flushBlockSize << endl 
 		<< "  files: " << files.size() << endl
 		<< "}" << endl;
 
@@ -69,6 +76,8 @@ int runMMapTest(int argc, char* argv[]) {
 	mgr.setUpdateOffset(touchOffset);
 	mgr.setUpdateValue(touchValue);
 	mgr.setFileSize(512LL * 1024 * 1024);
+	mgr.setProgressiveBlockFlush(progressiveBlockFlush);
+	mgr.setFlushBlockSize(flushBlockSize);
 
 	if (!mgr.getNextMemoryMappedFileLocation(0) || !mgr.fetchMinOSPageSizeBytes()) {
 		logger() << "Not supported platform/configuration, make sure you are running on 64-bit platform {mmap-offset: "

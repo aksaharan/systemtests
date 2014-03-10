@@ -134,6 +134,8 @@ MMapFile* MMapFileManager::_map(const string& filename, unsigned long long& leng
 	}
 
 	MMapFile* mapFile = new MMapFile(filename, view, length, handle, mapHandle);
+	mapFile->setAdjBlockFlush(_progressiveBlockFlush);
+	mapFile->setFlushBlockSize(_flushBlockSize);
 	_mappedFiles.insert(make_pair(filename, mapFile));
 	return mapFile;
 }

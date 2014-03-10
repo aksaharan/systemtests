@@ -24,6 +24,8 @@ public:
 	void setUpdateOffset(long value) { _updateOffset = value; }
 	void setUpdateValue(long value) { _updateValue = value; }
 	void setFileSize(unsigned long long value) { _fileSize = value; }
+	void setProgressiveBlockFlush(bool flag) { _progressiveBlockFlush = flag; }
+	void setFlushBlockSize(long value) { _flushBlockSize = value; }
 
 	bool runTests(const vector<string>& files);
 	MMapFile* mappedFile(const string& filename);
@@ -37,11 +39,14 @@ private:
 	long _updateOffset;
 	long _updateValue;
 	unsigned long long _fileSize;
+	long _flushBlockSize;
+	bool _progressiveBlockFlush;
 	std::map<string, MMapFile*> _mappedFiles;
 
 	MMapFileManager()
 		: _fileCreateOptions(FILE_ATTRIBUTE_NORMAL), _zeroFill(false), _flushThreads(1), _parallelFlush(false),
-		_repeatCount(1), _updateOffset(70 * 1024), _updateValue(rand()), _fileSize(512LL * 1024 * 1024) {
+		_repeatCount(1), _updateOffset(70 * 1024), _updateValue(rand()), _fileSize(512LL * 1024 * 1024),
+		_flushBlockSize(1024 * 1024), _progressiveBlockFlush(true) {
 	}
 
 	~MMapFileManager() {
