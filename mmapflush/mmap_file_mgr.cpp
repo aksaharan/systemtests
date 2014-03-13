@@ -201,8 +201,10 @@ bool MMapFileManager::_flushAll() {
 
 	ULONGLONG flushTime = GetTickCount64();
 	logger() << "=== Completed flushing all files {files: " << _mappedFiles.size() 
+		<< ", flushBlockSize: " << _flushBlockSize << ", flushThreads: " << _flushThreads
+		<< ", parallelFlush: " << _parallelFlush << ", updateOffset: " << _updateOffset
+		<< ", progressiveBlockFlush: " << _progressiveBlockFlush << ", fileSize: " << _fileSize
 		<< ", flush-time(millis): " << (flushTime - startTime) << "}" << endl;
-
 	return status;
 }
 
