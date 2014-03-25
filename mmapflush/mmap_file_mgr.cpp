@@ -134,6 +134,8 @@ MMapFile* MMapFileManager::_map(const string& filename, unsigned long long& leng
 	}
 
 	MMapFile* mapFile = new MMapFile(filename, view, length, handle, mapHandle);
+	mapFile->setAdjBlockFlush(_progressiveBlockFlush);
+	mapFile->setFlushBlockSize(_flushBlockSize);
 	_mappedFiles.insert(make_pair(filename, mapFile));
 	return mapFile;
 }
@@ -199,8 +201,10 @@ bool MMapFileManager::_flushAll() {
 
 	ULONGLONG flushTime = GetTickCount64();
 	logger() << "=== Completed flushing all files {files: " << _mappedFiles.size() 
+		<< ", flushBlockSize: " << _flushBlockSize << ", flushThreads: " << _flushThreads
+		<< ", parallelFlush: " << _parallelFlush << ", updateOffset: " << _updateOffset
+		<< ", progressiveBlockFlush: " << _progressiveBlockFlush << ", fileSize: " << _fileSize
 		<< ", flush-time(millis): " << (flushTime - startTime) << "}" << endl;
-
 	return status;
 }
 

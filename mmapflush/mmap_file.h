@@ -32,7 +32,7 @@ public:
 	const unsigned long long& length() const { return _length; }
 	const string& filename() const { return _filename; }
 
-	void setFlushBlockSize(unsigned long long value) { _flushBlockSize = value; }
+	void setFlushBlockSize(unsigned long long value) { _flushBlockSize = value <= 0 ? DEFAULT_FLUSH_BLOCK_SIZE : value; }
 	void setAdjBlockFlush(bool value) { _adjBlockFlush = value; }
 
 	bool _flushView(unsigned long long offset, unsigned long long len);
